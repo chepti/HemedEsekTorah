@@ -10,7 +10,7 @@
 
 ## התקנה
 
-במאגר הזה כל קבצי התוסף נמצאים בתוך התיקייה `hemed-esek-torah/`.
+במאגר הפיתוח, חבילת ההעלאה לוורדפרס נמצאת תחת `wordpress-plugin/hemed-esek-torah/` (העתק זהה לתיקייה הזו).
 
 1. להעתיק את **כל** התיקייה `hemed-esek-torah` (עם השם הזה) אל `wp-content/plugins/`, כך שהנתיב לקובץ הראשי יהיה בדיוק:  
    `wp-content/plugins/hemed-esek-torah/hemed-esek-torah.php`

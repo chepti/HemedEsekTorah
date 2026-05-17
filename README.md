@@ -1,5 +1,12 @@
 # HemedEsekTorah
 
-קבצי תוסף הוורדפרס נמצאים בתוך התיקייה [`hemed-esek-torah`](hemed-esek-torah/).
+מאגר פיתוח: כאן יש גם `.git`, `.gitignore` וקבצים כלליים.
 
-אם השרת מעלה בטעות את תיקיית הריפו החיצונית כתוסף, הקובץ `hemed-esek-torah.php` בשורש משמש כ-loader ומפנה אוטומטית לתוסף שבתיקייה.
+## העלאה לוורדפרס
+
+**ארזי והעלו רק את התיקייה** [`wordpress-plugin/hemed-esek-torah`](wordpress-plugin/hemed-esek-torah/)  
+(אל תארזי את שורש המאגר כולו.)
+
+לאחר הפריסה בשרת הנתיב צריך להיות:
+
+`wp-content/plugins/hemed-esek-torah/hemed-esek-torah.php`
