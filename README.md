@@ -51,12 +51,24 @@
 
 השורטקוד מציג גריד פעילויות, חיפוש וסינון, וכפתור שפותח טופס העלאה בחלונית.
 
+**כפתור בלבד בכותרת (בלי טופס שלם):** במקום `[hemed_esek_torah_submit]` ב־header, הכניסי:
+
+```text
+[hemed_esek_torah_modal_button]
+```
+
+או עם טקסט מותאם: `[hemed_esek_torah_modal_button label="העלאת פעילות"]`
+
+המודאל עם הטופס נטען אוטומטית בסוף העמוד אם אין כבר מודאל מ־`[hemed_esek_torah_home]`.
+
 אפשר גם להשתמש בנפרד:
 
 ```text
 [hemed_esek_torah_grid]
 [hemed_esek_torah_submit]
 ```
+
+`[hemed_esek_torah_submit]` מציג טופס מלא בעמוד — מתאים לעמוד ייעודי, לא לשורת כותרת.
 
 ## שדות ACF
 

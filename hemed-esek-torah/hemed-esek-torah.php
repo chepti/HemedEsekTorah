@@ -3,7 +3,7 @@
  * Plugin Name: Hemed Esek Torah
  * Plugin URI: https://hemed.chepti.com/
  * Description: שיתוף פעילויות "עסק תורה" בחמ"ד עם טופס קדמי, גריד, ACF ופעמון אישורים.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: Chepti
  * Text Domain: hemed-esek-torah
  * Requires at least: 6.0
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HET_VERSION', '1.0.3' );
+define( 'HET_VERSION', '1.0.4' );
 define( 'HET_POST_TYPE', 'het_activity' );
 define( 'HET_PLUGIN_FILE', __FILE__ );
 define( 'HET_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
@@ -47,6 +47,7 @@ final class Hemed_Esek_Torah_Plugin {
 		add_shortcode( 'hemed_esek_torah_home', array( $this->render, 'home_shortcode' ) );
 		add_shortcode( 'hemed_esek_torah_grid', array( $this->render, 'grid_shortcode' ) );
 		add_shortcode( 'hemed_esek_torah_submit', array( $this->render, 'submit_shortcode' ) );
+		add_shortcode( 'hemed_esek_torah_modal_button', array( $this->render, 'modal_button_shortcode' ) );
 
 		add_filter( 'the_content', array( $this->render, 'filter_single_content' ) );
 

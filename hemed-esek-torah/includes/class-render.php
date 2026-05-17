@@ -7,12 +7,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Hemed_Esek_Torah_Render {
 	private Hemed_Esek_Torah_Submission $submission;
 	private static array $viewed_posts = array();
+	private static int $modal_output_count = 0;
+	private static bool $modal_button_shortcode_used = false;
 
 	public function __construct( Hemed_Esek_Torah_Submission $submission ) {
 		$this->submission = $submission;
 
 		add_action( 'wp_ajax_het_like_activity', array( $this, 'ajax_like_activity' ) );
 		add_action( 'wp_ajax_nopriv_het_like_activity', array( $this, 'ajax_like_activity' ) );
+		add_action( 'wp_footer', array( $this, 'maybe_print_orphan_modal' ), 19 );
 	}
 
 	public function home_shortcode(): string {
@@ -28,7 +31,7 @@ final class Hemed_Esek_Torah_Render {
 					<h1>משתפים פעילויות קודש, לומדים אחד מהשני</h1>
 					<p>מרחב ידידותי למורים לשיתוף רעיונות, הכנות, קבצי עזר ותובנות מהשטח.</p>
 				</div>
-				<button class="het-button het-button--primary" type="button" data-het-open-modal>העלאת פעילות</button>
+				<button class="het-button het-button--upload-modal" type="button" data-het-open-modal>העלאת פעילות</button>
 			</div>
 
 			<?php echo $this->render_modal(); ?>
@@ -36,6 +39,34 @@ final class Hemed_Esek_Torah_Render {
 		</section>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	public function modal_button_shortcode( $atts = array(), $content = null ): string {
+		unset( $content );
+		$this->enqueue_assets();
+
+		self::$modal_button_shortcode_used = true;
+
+		$atts = shortcode_atts(
+			array(
+				'label' => 'העלאת פעילות',
+			),
+			$atts,
+			'hemed_esek_torah_modal_button'
+		);
+
+		return sprintf(
+			'<span class="het-header-upload-wrap"><button type="button" class="het-button het-button--upload-modal" data-het-open-modal>%s</button></span>',
+			esc_html( $atts['label'] )
+		);
+	}
+
+	public function maybe_print_orphan_modal(): void {
+		if ( ! self::$modal_button_shortcode_used || self::$modal_output_count > 0 ) {
+			return;
+		}
+
+		echo $this->render_modal();
 	}
 
 	public function grid_shortcode(): string {
@@ -136,6 +167,8 @@ final class Hemed_Esek_Torah_Render {
 	}
 
 	private function render_modal(): string {
+		self::$modal_output_count++;
+
 		ob_start();
 		?>
 		<div class="het-modal" data-het-modal hidden>
@@ -172,8 +205,10 @@ final class Hemed_Esek_Torah_Render {
 			$this->render_filter_select( 'het_gender_track', 'בנים / בנות', Hemed_Esek_Torah_ACF_Fields::gender_choices(), $current['het_gender_track'] );
 			$this->render_filter_select( 'het_activity_type', 'סוג פעילות', Hemed_Esek_Torah_ACF_Fields::activity_type_choices(), $current['het_activity_type'] );
 			?>
-			<button class="het-button" type="submit">סינון</button>
-			<a class="het-button het-button--ghost" href="<?php echo esc_url( remove_query_arg( array_keys( $current ) ) ); ?>">ניקוי</a>
+			<div class="het-filters__actions">
+				<button class="het-button" type="submit">סינון</button>
+				<a class="het-button het-button--ghost" href="<?php echo esc_url( remove_query_arg( array_keys( $current ) ) ); ?>">ניקוי</a>
+			</div>
 		</form>
 		<?php
 		return (string) ob_get_clean();
