@@ -3,7 +3,7 @@
  * Plugin Name: Hemed Esek Torah
  * Plugin URI: https://hemed.chepti.com/
  * Description: שיתוף פעילויות "עסק תורה" בחמ"ד עם טופס קדמי, גריד, ACF ופעמון אישורים.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Chepti
  * Text Domain: hemed-esek-torah
  * Requires at least: 6.0
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HET_VERSION', '1.0.2' );
+define( 'HET_VERSION', '1.0.3' );
 define( 'HET_POST_TYPE', 'het_activity' );
 define( 'HET_PLUGIN_FILE', __FILE__ );
 define( 'HET_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
@@ -33,6 +33,10 @@ final class Hemed_Esek_Torah_Plugin {
 		$this->render     = new Hemed_Esek_Torah_Render( $this->submission );
 
 		add_action( 'init', array( $this, 'register_post_type' ) );
+		add_action( 'init', array( $this, 'register_rewrite_rules' ), 11 );
+		add_filter( 'post_type_link', array( $this, 'filter_post_type_link' ), 10, 2 );
+		add_filter( 'post_type_archive_link', array( $this, 'filter_post_type_archive_link' ), 10, 2 );
+		add_action( 'template_redirect', array( $this, 'maybe_redirect_legacy_slug_url' ), 5 );
 		add_action( 'init', array( $this, 'maybe_flush_rewrite_rules' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
 		add_action( 'admin_notices', array( $this, 'maybe_show_acf_notice' ) );
@@ -73,15 +77,100 @@ final class Hemed_Esek_Torah_Plugin {
 				'publicly_queryable' => true,
 				'has_archive'        => true,
 				'menu_icon'          => 'dashicons-book-alt',
-				'rewrite'            => array(
-					'slug'       => 'esek-torah',
-					'with_front' => false,
-				),
+				'rewrite'            => false,
 				'show_in_rest'       => true,
 				'supports'           => array( 'title', 'thumbnail', 'comments' ),
 				'capability_type'    => 'post',
 			)
 		);
+	}
+
+	public function register_rewrite_rules(): void {
+		add_rewrite_rule(
+			'^esek-torah/p/([0-9]+)/?$',
+			'index.php?post_type=' . HET_POST_TYPE . '&p=$matches[1]',
+			'top'
+		);
+
+		add_rewrite_rule(
+			'^esek-torah/page/([0-9]+)/?$',
+			'index.php?post_type=' . HET_POST_TYPE . '&paged=$matches[1]',
+			'top'
+		);
+
+		add_rewrite_rule(
+			'^esek-torah/?$',
+			'index.php?post_type=' . HET_POST_TYPE,
+			'top'
+		);
+	}
+
+	public function filter_post_type_link( string $post_link, WP_Post $post ): string {
+		if ( HET_POST_TYPE !== $post->post_type ) {
+			return $post_link;
+		}
+
+		if ( 'publish' !== $post->post_status ) {
+			return $post_link;
+		}
+
+		return home_url( user_trailingslashit( 'esek-torah/p/' . (int) $post->ID ) );
+	}
+
+	public function filter_post_type_archive_link( string $link, string $post_type ): string {
+		if ( HET_POST_TYPE !== $post_type ) {
+			return $link;
+		}
+
+		return home_url( user_trailingslashit( 'esek-torah' ) );
+	}
+
+	public function maybe_redirect_legacy_slug_url(): void {
+		if ( ! is_404() ) {
+			return;
+		}
+
+		global $wp;
+
+		if ( empty( $wp->request ) ) {
+			return;
+		}
+
+		if ( ! preg_match( '#^esek-torah/([^/]+)/?$#', $wp->request, $matches ) ) {
+			return;
+		}
+
+		$segment = rawurldecode( $matches[1] );
+
+		if ( 'p' === $segment || 'page' === $segment || preg_match( '/^\d+$/', $segment ) ) {
+			return;
+		}
+
+		$found = get_posts(
+			array(
+				'post_type'              => HET_POST_TYPE,
+				'name'                   => $segment,
+				'post_status'            => 'publish',
+				'posts_per_page'         => 1,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+
+		if ( empty( $found ) ) {
+			return;
+		}
+
+		$post = get_post( (int) $found[0] );
+
+		if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+			return;
+		}
+
+		wp_safe_redirect( get_permalink( $post ), 301 );
+		exit;
 	}
 
 	public function maybe_flush_rewrite_rules(): void {
@@ -245,6 +334,7 @@ final class Hemed_Esek_Torah_Plugin {
 	public static function activate(): void {
 		$plugin = new self();
 		$plugin->register_post_type();
+		$plugin->register_rewrite_rules();
 		flush_rewrite_rules( true );
 		update_option( 'het_rewrite_rules_version', HET_VERSION );
 	}
