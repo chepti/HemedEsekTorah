@@ -24,14 +24,12 @@ final class Hemed_Esek_Torah_Render {
 		ob_start();
 		?>
 		<section class="het-home" dir="rtl">
-			<div class="het-hero">
-				<div class="het-hero__logo"><?php echo wp_kses_post( $this->get_logo_html() ); ?></div>
+			<div class="het-hero het-hero--simple">
 				<div class="het-hero__content">
 					<p class="het-kicker">עסק תורה בחמ״ד</p>
 					<h1>משתפים פעילויות קודש, לומדים אחד מהשני</h1>
 					<p>מרחב ידידותי למורים לשיתוף רעיונות, הכנות, קבצי עזר ותובנות מהשטח.</p>
 				</div>
-				<button class="het-button het-button--upload-modal" type="button" data-het-open-modal>העלאת פעילות</button>
 			</div>
 
 			<?php echo $this->render_modal(); ?>
@@ -56,7 +54,7 @@ final class Hemed_Esek_Torah_Render {
 		);
 
 		return sprintf(
-			'<span class="het-header-upload-wrap"><button type="button" class="het-button het-button--upload-modal" data-het-open-modal>%s</button></span>',
+			'<span class="het-header-upload-wrap"><button type="button" class="het-button het-button--header-trigger" data-het-open-modal>%s</button></span>',
 			esc_html( $atts['label'] )
 		);
 	}

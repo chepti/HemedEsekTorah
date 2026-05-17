@@ -65,49 +65,49 @@ final class Hemed_Esek_Torah_Submission {
 			<?php endif; ?>
 
 			<div class="het-form__grid">
-				<label>
+				<label class="het-form__full">
 					<span>כותרת הפעילות*</span>
 					<input type="text" name="het_title" required maxlength="120" placeholder="שם קצר וברור לפעילות">
 				</label>
 
-				<label>
-					<span>סמל מוסד*</span>
-					<input type="text" name="het_institution_code" required inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="123456">
-				</label>
+				<div class="het-form__row het-form__row--cols3">
+					<label>
+						<span>סמל מוסד*</span>
+						<input type="text" name="het_institution_code" required inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="123456">
+					</label>
+					<label>
+						<span>שם בית הספר*</span>
+						<input type="text" name="het_school_name" required maxlength="120">
+					</label>
+					<label>
+						<span>מחוז*</span>
+						<select name="het_district" required>
+							<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::district_choices() ); ?>
+						</select>
+					</label>
+				</div>
 
-				<label>
-					<span>שם בית הספר*</span>
-					<input type="text" name="het_school_name" required maxlength="120">
-				</label>
-
-				<label>
-					<span>מחוז*</span>
-					<select name="het_district" required>
-						<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::district_choices() ); ?>
-					</select>
-				</label>
-
-				<label>
-					<span>שלב גיל*</span>
-					<select name="het_age_stage" required>
-						<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::age_stage_choices() ); ?>
-					</select>
-				</label>
-
-				<label>
-					<span>בנים / בנות*</span>
-					<select name="het_gender_track" required>
-						<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::gender_choices() ); ?>
-					</select>
-				</label>
-
-				<label>
-					<span>סוג פעילות</span>
-					<select name="het_activity_type">
-						<option value="">ללא סינון מיוחד</option>
-						<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::activity_type_choices() ); ?>
-					</select>
-				</label>
+				<div class="het-form__row het-form__row--cols3">
+					<label>
+						<span>שלב גיל*</span>
+						<select name="het_age_stage" required>
+							<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::age_stage_choices() ); ?>
+						</select>
+					</label>
+					<label>
+						<span>בנים / בנות*</span>
+						<select name="het_gender_track" required>
+							<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::gender_choices() ); ?>
+						</select>
+					</label>
+					<label>
+						<span>סוג פעילות</span>
+						<select name="het_activity_type">
+							<option value="">ללא סינון מיוחד</option>
+							<?php $this->render_options( Hemed_Esek_Torah_ACF_Fields::activity_type_choices() ); ?>
+						</select>
+					</label>
+				</div>
 
 				<label class="het-form__wide">
 					<span>פירוט הפעילות* <small>5-7 שורות</small></span>
@@ -119,31 +119,44 @@ final class Hemed_Esek_Torah_Submission {
 					<textarea name="het_prep_checklist" rows="5" placeholder="כל פעולה בשורה נפרדת"></textarea>
 				</label>
 
-				<div class="het-form__wide het-upload-group">
+				<div class="het-form__wide het-upload-group" data-het-dynamic="images" data-het-max-slots="5">
 					<strong>תמונות*</strong>
-					<p>יש להעלות 2-5 תמונות. נא לא להעלות תמונות עם פנים של תלמידים.</p>
-					<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
-						<label>
-							<span>תמונה <?php echo esc_html( (string) $i ); ?><?php echo $i <= 2 ? '*' : ''; ?></span>
-							<input type="file" name="het_image_<?php echo esc_attr( (string) $i ); ?>" accept="image/*" <?php echo $i <= 2 ? 'required' : ''; ?>>
-						</label>
-					<?php endfor; ?>
+					<p class="het-upload-group__hint">חובה להעלות לפחות תמונה אחת. ניתן להוסיף עד חמש תמונות. נא לא להעלות תמונות עם פנים של תלמידים.</p>
+					<div class="het-dynamic-slots" data-het-slots-wrap>
+						<div class="het-file-slot" data-het-slot-index="1">
+							<span class="het-file-slot__caption">תמונה 1*</span>
+							<div class="het-file-slot__row">
+								<input class="het-visually-hidden" type="file" id="het_image_1" name="het_image_1" accept="image/*" required>
+								<label class="het-file-pill" for="het_image_1"><span class="het-file-pill__plus" aria-hidden="true">+</span><span class="het-visually-hidden">בחירת תמונה</span></label>
+								<span class="het-file-slot__name" data-het-file-name hidden></span>
+								<button type="button" class="het-file-slot__clear" data-het-clear-file hidden aria-label="ניקוי בחירת הקובץ">×</button>
+							</div>
+						</div>
+					</div>
+					<button type="button" class="het-dynamic-add het-button het-button--ghost" data-het-add-image hidden>הוסף עוד תמונה</button>
 				</div>
 
-				<div class="het-form__wide het-upload-group">
+				<div class="het-form__wide het-upload-group" data-het-dynamic="resources" data-het-max-slots="5">
 					<strong>קבצי עזר וקישורים</strong>
-					<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
-						<div class="het-form__pair">
-							<label>
-								<span>קובץ עזר <?php echo esc_html( (string) $i ); ?></span>
-								<input type="file" name="het_resource_file_<?php echo esc_attr( (string) $i ); ?>">
-							</label>
-							<label>
-								<span>קישור עזר <?php echo esc_html( (string) $i ); ?></span>
-								<input type="url" name="het_resource_url_<?php echo esc_attr( (string) $i ); ?>" placeholder="https://">
+					<p class="het-upload-group__hint">שדה אופציונלי: ניתן לצרף קובץ, קישור, או שניהם בכל שורה.</p>
+					<div class="het-dynamic-slots het-resource-slots" data-het-slots-wrap>
+						<div class="het-resource-row" data-het-slot-index="1">
+							<div class="het-resource-row__file">
+								<span class="het-file-slot__caption">קובץ עזר 1</span>
+								<div class="het-file-slot__row">
+									<input class="het-visually-hidden" type="file" id="het_resource_file_1" name="het_resource_file_1">
+									<label class="het-file-pill" for="het_resource_file_1"><span class="het-file-pill__plus" aria-hidden="true">+</span><span class="het-visually-hidden">בחירת קובץ עזר</span></label>
+									<span class="het-file-slot__name" data-het-file-name hidden></span>
+									<button type="button" class="het-file-slot__clear" data-het-clear-file hidden aria-label="ניקוי בחירת הקובץ">×</button>
+								</div>
+							</div>
+							<label class="het-resource-row__url">
+								<span>קישור עזר 1</span>
+								<input type="url" name="het_resource_url_1" placeholder="https://">
 							</label>
 						</div>
-					<?php endfor; ?>
+					</div>
+					<button type="button" class="het-dynamic-add het-button het-button--ghost" data-het-add-resource hidden>הוסף קובץ או קישור</button>
 				</div>
 
 				<label class="het-form__wide">
@@ -217,12 +230,8 @@ final class Hemed_Esek_Torah_Submission {
 			}
 		}
 
-		for ( $i = 1; $i <= 2; $i++ ) {
-			$key = 'het_image_' . $i;
-			if ( empty( $_FILES[ $key ]['name'] ) ) {
-				$errors[] = 'יש להעלות לפחות שתי תמונות.';
-				break;
-			}
+		if ( empty( $_FILES['het_image_1']['name'] ?? '' ) ) {
+			$errors[] = 'יש להעלות לפחות תמונה אחת.';
 		}
 
 		return $errors;

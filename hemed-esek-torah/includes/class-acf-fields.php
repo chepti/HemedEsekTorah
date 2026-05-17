@@ -145,7 +145,7 @@ final class Hemed_Esek_Torah_ACF_Fields {
 				'name'          => 'het_image_' . $i,
 				'type'          => 'image',
 				'instructions'  => 1 === $i ? 'נא לא להעלות תמונות עם פנים של תלמידים.' : '',
-				'required'      => $i <= 2 ? 1 : 0,
+				'required'      => 1 === $i ? 1 : 0,
 				'return_format' => 'id',
 				'preview_size'  => 'medium',
 				'library'       => 'all',
