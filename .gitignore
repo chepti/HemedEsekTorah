@@ -1,0 +1,11 @@
+# אריזות
+*.zip
+
+# מערכת
+Thumbs.db
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
