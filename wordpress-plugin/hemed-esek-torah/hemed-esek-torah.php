@@ -3,7 +3,7 @@
  * Plugin Name: Hemed Esek Torah
  * Plugin URI: https://hemed.chepti.com/
  * Description: שיתוף פעילויות "עסק תורה" בחמ"ד עם טופס קדמי, גריד, ACF ופעמון אישורים.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Chepti
  * Text Domain: hemed-esek-torah
  * Requires at least: 6.0
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HET_VERSION', '1.0.0' );
+define( 'HET_VERSION', '1.0.1' );
 define( 'HET_POST_TYPE', 'het_activity' );
 define( 'HET_PLUGIN_FILE', __FILE__ );
 define( 'HET_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
@@ -33,6 +33,7 @@ final class Hemed_Esek_Torah_Plugin {
 		$this->render     = new Hemed_Esek_Torah_Render( $this->submission );
 
 		add_action( 'init', array( $this, 'register_post_type' ) );
+		add_action( 'init', array( $this, 'maybe_flush_rewrite_rules' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
 		add_action( 'admin_notices', array( $this, 'maybe_show_acf_notice' ) );
 		add_action( 'admin_bar_menu', array( $this, 'add_pending_bell' ), 90 );
@@ -67,16 +68,30 @@ final class Hemed_Esek_Torah_Plugin {
 		register_post_type(
 			HET_POST_TYPE,
 			array(
-				'labels'        => $labels,
-				'public'        => true,
-				'has_archive'   => true,
-				'menu_icon'     => 'dashicons-book-alt',
-				'rewrite'       => array( 'slug' => 'esek-torah' ),
-				'show_in_rest'  => true,
-				'supports'      => array( 'title', 'thumbnail', 'comments' ),
-				'capability_type' => 'post',
+				'labels'             => $labels,
+				'public'             => true,
+				'publicly_queryable' => true,
+				'has_archive'        => true,
+				'menu_icon'          => 'dashicons-book-alt',
+				'rewrite'            => array(
+					'slug'       => 'esek-torah',
+					'with_front' => false,
+				),
+				'show_in_rest'       => true,
+				'supports'           => array( 'title', 'thumbnail', 'comments' ),
+				'capability_type'    => 'post',
 			)
 		);
+	}
+
+	public function maybe_flush_rewrite_rules(): void {
+		$stored = (string) get_option( 'het_rewrite_rules_version', '' );
+		if ( $stored === HET_VERSION ) {
+			return;
+		}
+
+		flush_rewrite_rules( true );
+		update_option( 'het_rewrite_rules_version', HET_VERSION );
 	}
 
 	public function register_assets(): void {
@@ -173,7 +188,8 @@ final class Hemed_Esek_Torah_Plugin {
 	public static function activate(): void {
 		$plugin = new self();
 		$plugin->register_post_type();
-		flush_rewrite_rules();
+		flush_rewrite_rules( true );
+		update_option( 'het_rewrite_rules_version', HET_VERSION );
 	}
 
 	public static function deactivate(): void {
