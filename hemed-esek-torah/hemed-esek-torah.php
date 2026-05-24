@@ -3,7 +3,7 @@
  * Plugin Name: Hemed Esek Torah
  * Plugin URI: https://hemed.chepti.com/
  * Description: שיתוף פעילויות "עסק תורה" בחמ"ד עם טופס קדמי, גריד, ACF ופעמון אישורים.
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Chepti
  * Text Domain: hemed-esek-torah
  * Requires at least: 6.0
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HET_VERSION', '1.0.5' );
+define( 'HET_VERSION', '1.0.6' );
 define( 'HET_POST_TYPE', 'het_activity' );
 define( 'HET_PLUGIN_FILE', __FILE__ );
 define( 'HET_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

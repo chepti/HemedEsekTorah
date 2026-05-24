@@ -16,6 +16,7 @@ final class Hemed_Esek_Torah_Render {
 		add_action( 'wp_ajax_het_like_activity', array( $this, 'ajax_like_activity' ) );
 		add_action( 'wp_ajax_nopriv_het_like_activity', array( $this, 'ajax_like_activity' ) );
 		add_action( 'wp_footer', array( $this, 'maybe_print_orphan_modal' ), 19 );
+		add_filter( 'wp_nav_menu_items', array( $this, 'append_upload_to_nav_menu' ), 20, 2 );
 	}
 
 	public function home_shortcode(): string {
@@ -65,6 +66,63 @@ final class Hemed_Esek_Torah_Render {
 		}
 
 		echo $this->render_modal();
+	}
+
+	/**
+	 * מוסיף כפתור העלאה לתפריט הניווט (במיוחד לתפריט מובייל/המבורגר).
+	 *
+	 * @param string   $items HTML של פריטי התפריט.
+	 * @param stdClass $args  ארגומנטים של wp_nav_menu.
+	 */
+	public function append_upload_to_nav_menu( string $items, $args ): string {
+		if ( is_admin() || ! apply_filters( 'het_nav_menu_upload_button', true ) ) {
+			return $items;
+		}
+
+		if ( ! $this->should_append_upload_to_nav_menu( $args ) ) {
+			return $items;
+		}
+
+		$label   = (string) apply_filters( 'het_nav_menu_upload_label', 'העלאת פעילות' );
+		$classes = 'menu-item menu-item-type-custom menu-item-het-upload het-nav-upload';
+
+		if ( apply_filters( 'het_nav_menu_upload_mobile_only', false ) ) {
+			$classes .= ' het-nav-upload--mobile-only';
+		}
+
+		$button = $this->modal_button_shortcode( array( 'label' => $label ) );
+
+		return $items . sprintf(
+			'<li class="%s">%s</li>',
+			esc_attr( $classes ),
+			$button
+		);
+	}
+
+	/**
+	 * @param stdClass $args ארגומנטים של wp_nav_menu.
+	 */
+	private function should_append_upload_to_nav_menu( $args ): bool {
+		$locations = apply_filters(
+			'het_nav_menu_upload_locations',
+			array( 'primary', 'main', 'header', 'mobile', 'top', 'menu-1', 'menu-primary' )
+		);
+
+		if ( ! is_array( $locations ) ) {
+			return true;
+		}
+
+		if ( empty( $locations ) ) {
+			return false;
+		}
+
+		$theme_location = isset( $args->theme_location ) ? (string) $args->theme_location : '';
+
+		if ( '' === $theme_location ) {
+			return (bool) apply_filters( 'het_nav_menu_upload_without_location', false );
+		}
+
+		return in_array( $theme_location, $locations, true );
 	}
 
 	public function grid_shortcode(): string {

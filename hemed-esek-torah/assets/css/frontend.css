@@ -185,6 +185,33 @@
 	white-space: nowrap;
 }
 
+.het-nav-upload {
+	display: flex;
+	align-items: center;
+	list-style: none;
+}
+
+.het-nav-upload .het-header-upload-wrap {
+	display: flex;
+	width: 100%;
+	padding-block: 6px;
+}
+
+.het-nav-upload .het-button--header-trigger {
+	width: 100%;
+	min-height: 44px;
+}
+
+.het-nav-upload--mobile-only {
+	display: none;
+}
+
+@media (max-width: 900px) {
+	.het-nav-upload--mobile-only {
+		display: flex;
+	}
+}
+
 .het-button--primary {
 	border: 0;
 	background: linear-gradient(118deg, var(--het-orange), var(--het-green));
